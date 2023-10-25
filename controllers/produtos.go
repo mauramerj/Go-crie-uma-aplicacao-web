@@ -1,18 +1,18 @@
 package controllers
 
 import (
-	"curso_alura_golang/Go-crie-uma-aplicacao-web/models"
 	"html/template"
 	"log"
 	"net/http"
 	"strconv"
+
+	"curso_alura_golang/Go-crie-uma-aplicacao-web/models"
 )
 
 var temp = template.Must(template.ParseGlob("templates/*.html"))
 
 func Index(w http.ResponseWriter, r *http.Request) {
 	todosOsProdutos := models.BuscaTodosOsProdutos()
-
 	temp.ExecuteTemplate(w, "Index", todosOsProdutos)
 }
 
@@ -29,16 +29,21 @@ func Insert(w http.ResponseWriter, r *http.Request) {
 
 		precoConvertidoParaFloat, err := strconv.ParseFloat(preco, 64)
 		if err != nil {
-			log.Println("Erro na conversão", err)
+			log.Println("Erro na conversão do preço:", err)
 		}
 
 		quantidadeConvertidaParaInt, err := strconv.Atoi(quantidade)
 		if err != nil {
-			log.Println("Erro ao converter inteiro", err)
+			log.Println("Erro na conversão do quantidade:", err)
 		}
 
 		models.CriaNovoProduto(nome, descricao, precoConvertidoParaFloat, quantidadeConvertidaParaInt)
-
 	}
+	http.Redirect(w, r, "/", 301)
+}
+
+func Delete(w http.ResponseWriter, r *http.Request) {
+	idDoProduto := r.URL.Query().Get("id")
+	models.DeletaProduto(idDoProduto)
 	http.Redirect(w, r, "/", 301)
 }
